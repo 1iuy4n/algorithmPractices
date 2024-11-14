@@ -77,41 +77,22 @@ public:
     void build(){
         for(int i=0; i<MAX_N; i++){
             for(int j=0; j<MAX_N; j++){
-                dp[i][j] = -1;
+                dp[i][j] = 0;
             }
-        }
-    }
-    int f(vector<int> & values, int l, int r){
-        if(l==r-1){
-            return 0;
-        } else if(l==r-2){
-            return values[l]*values[l+1]*values[r];
-        } else{
-            if(dp[l][r]==-1){
-                int ans = INT_MAX;
-                for(int m=l+1; m<r; m++){
-                    ans = min(f(values, l, m)+f(values, m, r)+values[l]*values[m]*values[r], ans);
-                }
-                dp[l][r] =  ans;
-            }
-            return dp[l][r];
         }
     }
     int minScoreTriangulation(vector<int>& values) {
         build();
         int n = values.size();
-        for(int l=0; l<n-1; l++){
-            dp[l][l+1] = 0;
-        }
-        for(int l=0; l<n-1; l++){
+        for(int l=n-2; l>=0; l--){
             for(int r = l+2; r<n; r++){
-                dp[l][r] = values[l]*values[l+1]*values[r];
+                dp[l][r] = INT_MAX;
                 for(int m = l+1; m<r; m++){
-                    dp[l][r] = min(dp[l][m]+dp[m][r]+values[l]*values[m]*values[r])
+                    dp[l][r] = min(dp[l][m]+dp[m][r]+values[l]*values[m]*values[r], dp[l][r]);
                 }
             }
         }
-        return f(values, 0, n-1);
+       return dp[0][n-1];
     }
 };
 
