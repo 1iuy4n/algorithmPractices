@@ -78,8 +78,17 @@ public:
         cuts.insert(cuts.begin(), 0);
         cuts.push_back(n);
         int ans = INT_MAX;
-        for(int l=0, r=n, m=1; m <cuts.size()-1; m++){
+        for(int m=1; m <cuts.size()-1; m++){
             ans = min(ans, f(1, m, cuts)+f(m+1, cuts.size()-1, cuts));
+        }
+        dp[1][cuts.size()-1] = ans;
+        for(int i=0; i<cuts.size(); i++){
+            for(int j=0; j<cuts.size(); j++){
+                // cout<<dp[i][j]<<" ";
+                printf("%d\t", dp[i][j]);
+            }
+            // cout<<"\n";
+            printf("\n");
         }
         return ans+n;
     }
@@ -93,33 +102,34 @@ public:
     void build(){
         for(int i=0; i<MAX_N; i++){
             for(int j=0; j<MAX_N; j++){
-                dp[i][j] = -1;
+                dp[i][j] = 0;
             }
         }
-    }
-    int f(int cutsL, int cutsR, vector<int>& cuts){
-        if(cutsL==cutsR){
-            return 0;
-        }
-        if(dp[cutsL][cutsR]==-1){
-            int ans = INT_MAX;
-            for(int m = cutsL; m<cutsR; m++){
-                ans = min(ans, f(cutsL, m, cuts)+f(m+1, cutsR, cuts));
-            }
-            dp[cutsL][cutsR] = ans+cuts[cutsR]-cuts[cutsL-1];
-        }
-        return dp[cutsL][cutsR];
     }
     int minCost(int n, vector<int>& cuts) {
         build();
         sort(cuts.begin(), cuts.end(), less<>());
         cuts.insert(cuts.begin(), 0);
         cuts.push_back(n);
-        int ans = INT_MAX;
-        for(int l=0, r=n, m=1; m <cuts.size()-1; m++){
-            ans = min(ans, f(1, m, cuts)+f(m+1, cuts.size()-1, cuts));
+        int len = cuts.size();
+        for(int l=len-2; l>=1; l--){
+            for(int r=l+1; r<len; r++){
+                int ans = INT_MAX;
+                for(int m = l; m<r; m++){
+                    ans = min(ans, dp[l][m]+dp[m+1][r]);
+                }
+                dp[l][r] = ans+cuts[r]-cuts[l-1];
+            }
         }
-        return ans+n;
+        for(int i=0; i<cuts.size(); i++){
+            for(int j=0; j<cuts.size(); j++){
+                // cout<<dp[i][j]<<" ";
+                printf("%d\t", dp[i][j]);
+            }
+            // cout<<"\n";
+            printf("\n");
+        }
+        return dp[1][len-1];
     }
 };
 
