@@ -63,6 +63,38 @@ public:
         }
         return dp[index][alreadySelect][freeSelect][currSum];
     }
+    int dp1[MAXN][2][MAXM];
+    void build1(){
+        for(int i=0; i<MAXN; i++){
+            for(int j=0; j<MAXM; j++){
+                dp1[i][0][j] = -1;
+                dp1[i][1][j] = -1;
+            }
+        }
+    }
+    int getSum1(vector<int>& num, int min_sum, int max_sum, int freeSelect, int index, int currSum){
+        if((currSum>max_sum) || (currSum+(num.size()-index)*9<min_sum)){
+            return 0;
+        }
+        if(index == num.size()){
+            return 1;
+        }
+        if(dp1[index][freeSelect][currSum] == -1){
+            int ans = 0;
+            if(freeSelect==1){
+                for(int i=0; i<=9; i++){
+                    ans = (ans + getSum1(num, min_sum, max_sum, 1, index+1, currSum+i))%mod;
+                }
+            } else{
+                for(int i=0; i<num[index]; i++){
+                    ans = (ans + getSum1(num, min_sum, max_sum, 1, index+1, currSum+i))%mod;
+                }
+                ans = (ans + getSum1(num, min_sum, max_sum, 0, index+1, currSum+num[index]))%mod;
+            }
+            dp1[index][freeSelect][currSum] = ans;
+        }
+        return dp1[index][freeSelect][currSum];
+    }
     bool check(vector<int>& num1, int min_sum, int max_sum){
         int num1Sum = 0;
         for(int i=0; i<num1.size(); i++){
@@ -83,11 +115,15 @@ public:
         for(int i=0; i<num2.size(); i++){
             int2[i] = num2[i]-'0';
         }
-        build();
-        int result2 = getSum(int2, min_sum, max_sum, 0, 0, 0, 0);
+        // build();
+        build1();
+        // int result2 = getSum(int2, min_sum, max_sum, 0, 0, 0, 0);
+        int result2 = getSum1(int2, min_sum, max_sum, 0, 0, 0);
         // cout<<result2<<endl;
-        build();
-        int result1 = getSum(int1, min_sum, max_sum, 0, 0, 0, 0);
+        // build();
+        build1();
+        // int result1 = getSum(int1, min_sum, max_sum, 0, 0, 0, 0);
+        int result1 = getSum1(int1, min_sum, max_sum, 0, 0, 0);
         // cout<<result1<<endl;
         int ans = (result2-result1+mod)%mod;
         if(check(int1, min_sum, max_sum)){
